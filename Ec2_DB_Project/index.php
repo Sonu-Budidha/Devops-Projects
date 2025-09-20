@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>☁️ Cloud Guestbook</title>
+    <title>☁️ Unlox- Cloud/Devops Course Feedback Form </title>
     <style>
         body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; }
         .container { max-width:700px; margin:40px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }

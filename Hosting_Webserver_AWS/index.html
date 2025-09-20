@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cloud Portfolio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Cloud Portfolio</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="text-center bg-primary text-white p-5">
+    <h1 class="display-4">Hi, I’m Sonu 🚀</h1>
+    <p class="lead">Cloud Enthusiast | DevOps Learner | Building with AWS, Azure & GCP</p>
+    <a href="about.html" class="btn btn-light btn-lg mt-3">Learn More</a>
+  </section>
+
+  <!-- Project Section with Steps -->
+  <section class="container my-5">
+    <h2 class="text-center mb-4">My Cloud Project</h2>
+    <div class="card shadow-sm p-4">
+      <h4>🌐 Hosting a Web Server on AWS Cloud</h4>
+      <p class="text-muted">This project demonstrates how to build a secure and scalable cloud network and deploy a website on AWS.</p>
+      <ol class="list-group list-group-numbered">
+        <li class="list-group-item">🏛 Step 1 – Create a VPC</li>
+        <li class="list-group-item">🌐 Step 2 – Create a Public Subnet</li>
+        <li class="list-group-item">🔗 Step 3 – Attach Internet Gateway (IGW)</li>
+        <li class="list-group-item">🛣 Step 4 – Create Route Table for Public Traffic</li>
+        <li class="list-group-item">🔐 Step 5 – Create Security Group (Firewall)</li>
+        <li class="list-group-item">🖥 Step 6 – Launch Virtual Machine (EC2)</li>
+        <li class="list-group-item">🌍 Step 7 – Connect to Your VM</li>
+        <li class="list-group-item">🛠 Step 8 – Install Web Server (Nginx)</li>
+        <li class="list-group-item">🌐 Step 9 – Deploy Your Website</li>
+      </ol>
+      <p class="mt-3"><strong>Outcome:</strong> A fully functional website hosted on AWS EC2, accessible globally through your public IP or domain name.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3">
+    <p>© 2025 Sonu Budidha | Built with 💻 & ☁️</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -131,7 +131,10 @@ sudo nano index.php
 mysql -h <RDS-ENDPOINT> -u admin -p
 
 2. Create Database and Table
-CREATE DATABASE guestbook; ##
+   
+## 
+CREATE DATABASE guestbook; 
+##
 USE guestbook; 
 
 ##

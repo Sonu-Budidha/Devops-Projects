@@ -113,9 +113,10 @@ Security Group: DB-SG
 ssh -i project-key.pem ubuntu@<EC2-Public-IP>
 
 2. Install Apache, PHP, MySQL client
-sudo apt update && sudo apt install apache2 php php-mysql mysql-client -y
+   
+sudo apt update && sudo apt install apache2 php php-mysql mysql-client -y  ##
 
-3. Replace default web page with your app
+4. Replace default web page with your app
 cd /var/www/html/
 sudo rm index.html
 sudo nano index.php
@@ -130,16 +131,17 @@ sudo nano index.php
 mysql -h <RDS-ENDPOINT> -u admin -p
 
 2. Create Database and Table
-CREATE DATABASE guestbook;
-USE guestbook;
+CREATE DATABASE guestbook; ##
+USE guestbook; 
 
+##
 CREATE TABLE entries (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(50),
   message TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+##
 
 🗂 Step 9 – Verify
 -------------------------------------------------------------------------------------------
@@ -147,12 +149,12 @@ From Web App:
 
 Open browser → http://<EC2-Public-IP> → submit a message.
 
-From MySQL:
-SHOW DATABASES;
-USE guestbook;
-SHOW TABLES;
+From MySQL:  ##
+SHOW DATABASES; ##
+USE guestbook; ##
+SHOW TABLES; ##
 
-SELECT * FROM entries ORDER BY created_at DESC;
+SELECT * FROM entries ORDER BY created_at DESC; ##
 
 ✅ You should see the same data in your DB and web app.
 

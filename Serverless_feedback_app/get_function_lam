@@ -1,0 +1,27 @@
+import json
+import boto3
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('tablename')
+
+def lambda_handler(event, context):
+    try:
+        response = table.scan()
+        items = response.get("Items", [])
+
+        # Sort by id (latest first)
+        items.sort(key=lambda x: x["id"], reverse=True)
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"messages": items}),
+            "headers": {"Access-Control-Allow-Origin": "*"}
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)}),
+            "headers": {"Access-Control-Allow-Origin": "*"}
+        }
+

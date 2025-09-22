@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📖 Serverless Guestbook</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+    header { background: #2d89ef; color: #fff; padding: 20px; text-align: center; }
+    main { max-width: 700px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    h2 { color: #333; margin-top: 0; }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #2d89ef; color: white; border: none; padding: 12px 18px; border-radius: 5px; cursor: pointer; margin-right: 8px; }
+    button:hover { background: #1a5fb4; }
+    #status { margin: 10px 0; padding: 10px; border-radius: 5px; display: none; }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    #messages { margin-top: 20px; display: none; } /* hidden by default */
+    .msg { border-bottom: 1px solid #eee; padding: 10px 0; }
+    .msg strong { color: #2d89ef; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📖 Serverless Guestbook</h1>
+    <p>Built with AWS Lambda, API Gateway & DynamoDB</p>
+  </header>
+
+  <main>
+    <h2>Leave a Message</h2>
+    <input type="text" id="name" placeholder="Your name">
+    <textarea id="message" placeholder="Your message"></textarea>
+    <div>
+      <button onclick="postMessage()">Submit</button>
+      <button onclick="toggleMessages()">📜 View Messages</button>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="messages"></div>
+  </main>
+
+  <script>
+    const API_URL = "https://url/messages";
+    let messagesVisible = false; // track state
+
+    async function postMessage() {
+      const name = document.getElementById("name").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!message) {
+        showStatus("Message cannot be empty", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, message })
+        });
+
+        const raw = await res.json();
+        const data = typeof raw.body === "string" ? JSON.parse(raw.body) : raw;
+
+        if (data.success) {
+          showStatus(data.message, "success");
+          document.getElementById("name").value = "";
+          document.getElementById("message").value = "";
+          if (messagesVisible) loadMessages(); // refresh only if visible
+        } else {
+          showStatus(data.error || "Something went wrong", "error");
+        }
+      } catch (err) {
+        showStatus("Error: " + err.message, "error");
+      }
+    }
+
+    async function toggleMessages() {
+      const container = document.getElementById("messages");
+      if (messagesVisible) {
+        container.style.display = "none"; // hide
+        messagesVisible = false;
+      } else {
+        await loadMessages(); // fetch before showing
+        container.style.display = "block"; // show
+        messagesVisible = true;
+      }
+    }
+
+    async function loadMessages() {
+      try {
+        const res = await fetch(API_URL);
+        const raw = await res.json();
+        const data = typeof raw.body === "string" ? JSON.parse(raw.body) : raw;
+
+        const container = document.getElementById("messages");
+        container.innerHTML = "<h2>Messages</h2>";
+
+        if (!data.messages || data.messages.length === 0) {
+          container.innerHTML += "<p>No messages yet.</p>";
+          return;
+        }
+
+        data.messages.forEach(m => {
+          container.innerHTML += `
+            <div class="msg">
+              <strong>${m.name}:</strong> ${m.message}
+            </div>
+          `;
+        });
+      } catch (err) {
+        showStatus("Failed to load messages: " + err.message, "error");
+      }
+    }
+
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById("status");
+      statusDiv.innerText = message;
+      statusDiv.className = type;
+      statusDiv.style.display = "block";
+    }
+  </script>
+</body>
+</html>
+

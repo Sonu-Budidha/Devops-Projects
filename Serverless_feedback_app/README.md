@@ -22,7 +22,7 @@ By the end, you will have:
 
 Go to DynamoDB → Tables → Create Table
 
-Table Name: project6th
+Table Name: Bucketname
 
 Partition Key: id (String)
 

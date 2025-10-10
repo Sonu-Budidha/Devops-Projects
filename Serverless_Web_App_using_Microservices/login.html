@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Serverless App</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .login-box { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); width: 320px; text-align: center; }
+    h2 { color: #2d89ef; margin-bottom: 20px; }
+    input, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #2d89ef; color: #fff; border: none; cursor: pointer; font-size: 16px; }
+    button:hover { background: #1a5fb4; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>🔑 Login</h2>
+    <input type="text" id="username" placeholder="Enter your name">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <script>
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        alert("Please enter your name!");
+        return;
+      }
+      localStorage.setItem("username", username);
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
+

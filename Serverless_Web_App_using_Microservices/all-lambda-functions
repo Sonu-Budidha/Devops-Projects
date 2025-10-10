@@ -1,0 +1,223 @@
+orders-post.py
+
+import json
+import boto3
+import uuid
+import time
+from decimal import Decimal
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Orders')
+
+def lambda_handler(event, context):
+    try:
+        if "body" in event and event["body"]:
+            body = json.loads(event["body"])
+        else:
+            body = event
+
+        userId = body.get("userId")
+        productId = body.get("productId")
+        quantity = body.get("quantity")
+
+        if not userId or not productId or not quantity:
+            return {
+                "statusCode": 400,
+                "headers": {"Access-Control-Allow-Origin": "*"},
+                "body": json.dumps({"error": "All fields are required"})
+            }
+
+        order_id = str(uuid.uuid4())
+        item = {
+            "orderId": order_id,
+            "userId": userId,
+            "productId": productId,
+            "quantity": int(quantity),
+            "timestamp": int(time.time())
+        }
+        table.put_item(Item=item)
+
+        return {
+            "statusCode": 200,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"message": "Order created successfully", "order": item}, default=str)
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"error": str(e)})
+        }
+
+
+
+
+##products-post.py
+
+import json
+import boto3
+import uuid
+from decimal import Decimal
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Products')
+
+def lambda_handler(event, context):
+    try:
+        if "body" in event and event["body"]:
+            body = json.loads(event["body"])
+        else:
+            body = event
+
+        name = body.get("name")
+        price = body.get("price")
+
+        if not name or not price:
+            return {
+                "statusCode": 400,
+                "headers": {"Access-Control-Allow-Origin": "*"},
+                "body": json.dumps({"error": "Name and Price are required"})
+            }
+
+        product_id = str(uuid.uuid4())
+        item = {"productId": product_id, "name": name, "price": Decimal(str(price))}
+        table.put_item(Item=item)
+
+        return {
+            "statusCode": 200,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"message": "Product created successfully", "product": item}, default=str)
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"error": str(e)})
+        }
+
+##users-post.py
+
+import json
+import boto3
+import uuid
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Users')
+
+def lambda_handler(event, context):
+    try:
+        # Parse input
+        if "body" in event and event["body"]:
+            body = json.loads(event["body"])
+        else:
+            body = event
+
+        name = body.get("name")
+        email = body.get("email")
+
+        if not name or not email:
+            return {
+                "statusCode": 400,
+                "headers": {"Access-Control-Allow-Origin": "*"},
+                "body": json.dumps({"error": "Name and Email are required"})
+            }
+
+        user_id = str(uuid.uuid4())
+        item = {"userId": user_id, "name": name, "email": email}
+        table.put_item(Item=item)
+
+        return {
+            "statusCode": 200,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"message": "User created successfully", "user": item})
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"error": str(e)})
+        }
+
+
+##users-get.py
+
+import json, boto3, decimal
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("Users")
+
+def lambda_handler(event, context):
+    try:
+        response = table.scan()
+        items = response.get("Items", [])
+
+        return {
+            "statusCode": 200,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps(items, default=str)
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"error": str(e)})
+        }
+
+
+##orders-get.py
+
+import json, boto3
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("Orders")
+
+def lambda_handler(event, context):
+    try:
+        response = table.scan()
+        items = response.get("Items", [])
+
+        return {
+            "statusCode": 200,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps(items, default=str)
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"error": str(e)})
+        }
+
+
+##products-get.py
+
+import json, boto3
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("Products")
+
+def lambda_handler(event, context):
+    try:
+        response = table.scan()
+        items = response.get("Items", [])
+
+        return {
+            "statusCode": 200,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps(items, default=str)
+        }
+
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            "body": json.dumps({"error": str(e)})
+        }
+
+
+

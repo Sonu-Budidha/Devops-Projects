@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Serverless Microservices App</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+    header { background: #2d89ef; color: #fff; padding: 15px; border-radius: 5px; text-align: center; position: relative; }
+    section { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    h2 { color: #2d89ef; }
+    input, button { margin: 5px 0; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #2d89ef; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #1a5fb4; }
+    .logout-btn { position: absolute; right: 15px; top: 15px; background: #e74c3c; }
+    .logout-btn:hover { background: #c0392b; }
+    .output { margin-top: 10px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; white-space: pre-wrap; }
+    .loading { font-style: italic; color: #888; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 10px; text-align: left; }
+    tr:nth-child(even) { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Serverless Microservices Dashboard</h1>
+    <p>Welcome, <span id="userDisplay"></span>!</p>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <section>
+    <h2>👤 Users</h2>
+    <input id="username" placeholder="Enter name">
+    <input id="email" placeholder="Enter email">
+    <button onclick="createUser()">Add User</button>
+    <button onclick="listUsers()">List Users</button>
+    <div id="usersOutput" class="output"></div>
+  </section>
+
+  <section>
+    <h2>🛍 Products</h2>
+    <input id="productname" placeholder="Enter product">
+    <input id="price" placeholder="Enter price">
+    <button onclick="createProduct()">Add Product</button>
+    <button onclick="listProducts()">List Products</button>
+    <div id="productsOutput" class="output"></div>
+  </section>
+
+  <section>
+    <h2>📑 Orders</h2>
+    <input id="orderUserId" placeholder="User ID">
+    <input id="orderProductId" placeholder="Product ID">
+    <input id="quantity" type="number" placeholder="Quantity" value="1">
+    <button onclick="createOrder()">Create Order</button>
+    <button onclick="listOrders()">List Orders</button>
+    <div id="ordersOutput" class="output"></div>
+  </section>
+
+  <script>
+    // 🔗 Replace with your API Gateway endpoint
+    const API = "https://RESTAPI-URL";
+
+    // Show logged-in user
+    const username = localStorage.getItem("username");
+    if (!username) {
+      window.location.href = "login.html"; // redirect if not logged in
+    }
+    document.getElementById("userDisplay").innerText = username;
+
+    function logout() {
+      localStorage.removeItem("username");
+      window.location.href = "login.html";
+    }
+
+    function showLoading(elementId) {
+      document.getElementById(elementId).innerHTML = '<div class="loading">Loading...</div>';
+    }
+
+    // 🔧 Fixed fetchData with body parsing
+    async function fetchData(url, method, body = null) {
+      try {
+        const options = {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: body ? JSON.stringify(body) : null
+        };
+        const response = await fetch(url, options);
+        const text = await response.text();
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          return { error: "Invalid JSON: " + text };
+        }
+
+        // unwrap API Gateway proxy response
+        if (data.body) {
+          try {
+            data = JSON.parse(data.body);
+          } catch {
+            return { error: "Failed to parse body: " + data.body };
+          }
+        }
+
+        return data;
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+    // Create User
+    async function createUser() {
+      const name = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      if (!name || !email) return alert('Please fill in both fields');
+
+      const result = await fetchData(API + "/users", "POST", { name, email });
+      document.getElementById("usersOutput").innerText =
+        result.error ? result.error : '✅ User created successfully!';
+    }
+
+    // List Users
+    async function listUsers() {
+      showLoading("usersOutput");
+      const result = await fetchData(API + "/users", "GET");
+      if (result.error) {
+        document.getElementById("usersOutput").innerText = result.error;
+      } else {
+        let html = "<table><tr><th>User ID</th><th>Name</th><th>Email</th></tr>";
+        result.forEach(u => {
+          html += `<tr><td>${u.userId}</td><td>${u.name}</td><td>${u.email}</td></tr>`;
+        });
+        html += "</table>";
+        document.getElementById("usersOutput").innerHTML = html;
+      }
+    }
+
+    // Create Product
+    async function createProduct() {
+      const name = document.getElementById("productname").value;
+      const price = document.getElementById("price").value;
+      if (!name || !price) return alert('Please fill in both fields');
+
+      const result = await fetchData(API + "/products", "POST", { name, price });
+      document.getElementById("productsOutput").innerText =
+        result.error ? result.error : '✅ Product created successfully!';
+    }
+
+    // List Products
+    async function listProducts() {
+      showLoading("productsOutput");
+      const result = await fetchData(API + "/products", "GET");
+      if (result.error) {
+        document.getElementById("productsOutput").innerText = result.error;
+      } else {
+        let html = "<table><tr><th>Product ID</th><th>Name</th><th>Price</th></tr>";
+        result.forEach(p => {
+          html += `<tr><td>${p.productId}</td><td>${p.name}</td><td>${p.price}</td></tr>`;
+        });
+        html += "</table>";
+        document.getElementById("productsOutput").innerHTML = html;
+      }
+    }
+
+    // Create Order
+    async function createOrder() {
+      const userId = document.getElementById("orderUserId").value;
+      const productId = document.getElementById("orderProductId").value;
+      const quantity = document.getElementById("quantity").value;
+      if (!userId || !productId || !quantity) return alert('Please fill in all fields');
+
+      const result = await fetchData(API + "/orders", "POST", { userId, productId, quantity });
+      document.getElementById("ordersOutput").innerText =
+        result.error ? result.error : '✅ Order created successfully!';
+    }
+
+    // List Orders
+    async function listOrders() {
+      showLoading("ordersOutput");
+      const result = await fetchData(API + "/orders", "GET");
+      if (result.error) {
+        document.getElementById("ordersOutput").innerText = result.error;
+      } else {
+        let html = "<table><tr><th>Order ID</th><th>User ID</th><th>Product ID</th><th>Quantity</th></tr>";
+        result.forEach(o => {
+          html += `<tr><td>${o.orderId}</td><td>${o.userId}</td><td>${o.productId}</td><td>${o.quantity}</td></tr>`;
+        });
+        html += "</table>";
+        document.getElementById("ordersOutput").innerHTML = html;
+      }
+    }
+  </script>
+</body>
+</html>
+
